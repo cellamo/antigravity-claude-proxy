@@ -550,6 +550,9 @@ app.post('/v1/messages', async (req, res) => {
  * Catch-all for unsupported endpoints
  */
 app.use('*', (req, res) => {
+    if (logger.isDebugEnabled) {
+        logger.debug(`[API] 404 Not Found: ${req.method} ${req.originalUrl}`);
+    }
     res.status(404).json({
         type: 'error',
         error: {

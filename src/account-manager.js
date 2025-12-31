@@ -309,14 +309,29 @@ export class AccountManager {
             return { account: stickyAccount, waitMs: 0 };
         }
 
-        // Check if we should wait for current account
+        // Current account is rate-limited or invalid.
+        // CHECK IF OTHERS ARE AVAILABLE before deciding to wait.
+        // We prefer switching to an available neighbor over waiting for the sticky one,
+        // to avoid "erroring forever" / tight retry loops on short rate limits.
+        const available = this.getAvailableAccounts();
+        if (available.length > 0) {
+            // Found a free account! Switch immediately.
+            const nextAccount = this.pickNext();
+            if (nextAccount) {
+                logger.info(`[AccountManager] Switched to new account (failover): ${nextAccount.email}`);
+                return { account: nextAccount, waitMs: 0 };
+            }
+        }
+
+        // No other accounts available. Now checking if we should wait for current account.
         const waitInfo = this.shouldWaitForCurrentAccount();
         if (waitInfo.shouldWait) {
             logger.info(`[AccountManager] Waiting ${formatDuration(waitInfo.waitMs)} for sticky account: ${waitInfo.account.email}`);
             return { account: null, waitMs: waitInfo.waitMs };
         }
 
-        // Current account unavailable for too long, switch to next available
+        // Current account unavailable for too long/invalid, and no others available?
+        // pickNext will likely return null or loop, but we defer to standard logic.
         const nextAccount = this.pickNext();
         if (nextAccount) {
             logger.info(`[AccountManager] Switched to new account for cache: ${nextAccount.email}`);

@@ -166,25 +166,25 @@ function parseResetTime(responseOrError, errorText = '') {
                 const resetTime = new Date(quotaTimestampMatch[1]).getTime();
                 if (!isNaN(resetTime)) {
                     resetMs = resetTime - Date.now();
-                    if (resetMs > 0) {
-                        logger.debug(`[CloudCode] Parsed quotaResetTimeStamp: ${quotaTimestampMatch[1]} (${resetMs}ms)`);
-                    } else {
-                        resetMs = null;
-                    }
+                    // Even if expired or 0, we found a timestamp, so rely on it.
+                    // But if it's negative, it means "now", so treat as small wait.
+                    logger.debug(`[CloudCode] Parsed quotaResetTimeStamp: ${quotaTimestampMatch[1]} (Delta: ${resetMs}ms)`);
                 }
             }
         }
-
+        
         // Try to extract "retry-after-ms" or "retryDelay" - check seconds format first (e.g. "7739.23s")
-        const secMatch = msg.match(/(?:retry[-_]?after[-_]?ms|retryDelay)[:\s"]+([\d\.]+)(?:s\b|s")/i);
-        if (secMatch) {
-            resetMs = Math.ceil(parseFloat(secMatch[1]) * 1000);
-            logger.debug(`[CloudCode] Parsed retry seconds from body (precise): ${resetMs}ms`);
+        // Added stricter regex to avoid partial matches
+        if (!resetMs) {
+             const secMatch = msg.match(/(?:retry[-_]?after[-_]?ms|retryDelay)[:\s"]+([\d\.]+)(?:s\b|s")/i);
+             if (secMatch) {
+                 resetMs = Math.ceil(parseFloat(secMatch[1]) * 1000);
+                 logger.debug(`[CloudCode] Parsed retry seconds from body (precise): ${resetMs}ms`);
+             }
         }
 
         if (!resetMs) {
             // Check for ms (explicit "ms" suffix or implicit if no suffix)
-            // Rejects "s" suffix or floats (handled above)
             const msMatch = msg.match(/(?:retry[-_]?after[-_]?ms|retryDelay)[:\s"]+(\d+)(?:\s*ms)?(?![\w.])/i);
             if (msMatch) {
                 resetMs = parseInt(msMatch[1], 10);
@@ -237,6 +237,16 @@ function parseResetTime(responseOrError, errorText = '') {
                     }
                 }
             }
+        }
+    }
+
+    // SANITY CHECK: Enforce strict minimums for found rate limits
+    // If we found a reset time, but it's very small (e.g. < 1s) or negative,
+    // explicitly bump it up to avoid "Available in 0s" loops.
+    if (resetMs !== null) {
+        if (resetMs < 1000) {
+            logger.debug(`[CloudCode] Reset time too small (${resetMs}ms), enforcing 2s buffer`);
+            resetMs = 2000; 
         }
     }
 
