@@ -127,16 +127,16 @@ npx antigravity-claude-proxy start
 npm start
 ```
 
-The server runs on `http://localhost:8080` by default.
+The server runs on `http://localhost:8085` by default.
 
 ### 3. Verify It's Working
 
 ```bash
 # Health check
-curl http://localhost:8080/health
+curl http://localhost:8085/health
 
 # Check account status and quota limits
-curl "http://localhost:8080/account-limits?format=table"
+curl "http://localhost:8085/account-limits?format=table"
 ```
 
 ---
@@ -157,7 +157,7 @@ Add this configuration:
 {
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "test",
-    "ANTHROPIC_BASE_URL": "http://localhost:8080",
+    "ANTHROPIC_BASE_URL": "http://localhost:8085",
     "ANTHROPIC_MODEL": "claude-opus-4-5-thinking",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5-thinking",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5-thinking",
@@ -173,7 +173,7 @@ Or to use Gemini models:
 {
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "test",
-    "ANTHROPIC_BASE_URL": "http://localhost:8080",
+    "ANTHROPIC_BASE_URL": "http://localhost:8085",
     "ANTHROPIC_MODEL": "gemini-3-pro-high",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini-3-pro-high",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini-3-flash",
@@ -190,7 +190,7 @@ Add the proxy settings to your shell profile:
 **macOS / Linux:**
 
 ```bash
-echo 'export ANTHROPIC_BASE_URL="http://localhost:8080"' >> ~/.zshrc
+echo 'export ANTHROPIC_BASE_URL="http://localhost:8085"' >> ~/.zshrc
 echo 'export ANTHROPIC_API_KEY="test"' >> ~/.zshrc
 source ~/.zshrc
 ```
@@ -200,7 +200,7 @@ source ~/.zshrc
 **Windows (PowerShell):**
 
 ```powershell
-Add-Content $PROFILE "`n`$env:ANTHROPIC_BASE_URL = 'http://localhost:8080'"
+Add-Content $PROFILE "`n`$env:ANTHROPIC_BASE_URL = 'http://localhost:8085'"
 Add-Content $PROFILE "`$env:ANTHROPIC_API_KEY = 'test'"
 . $PROFILE
 ```
@@ -208,7 +208,7 @@ Add-Content $PROFILE "`$env:ANTHROPIC_API_KEY = 'test'"
 **Windows (Command Prompt):**
 
 ```cmd
-setx ANTHROPIC_BASE_URL "http://localhost:8080"
+setx ANTHROPIC_BASE_URL "http://localhost:8085"
 setx ANTHROPIC_API_KEY "test"
 ```
 
@@ -263,7 +263,7 @@ When you add multiple accounts, the proxy automatically:
 Check account status anytime:
 
 ```bash
-curl "http://localhost:8080/account-limits?format=table"
+curl "http://localhost:8085/account-limits?format=table"
 ```
 
 ---
@@ -319,7 +319,7 @@ Or add accounts via OAuth instead: `antigravity-claude-proxy accounts add`
 
 The token might have expired. Try:
 ```bash
-curl -X POST http://localhost:8080/refresh-token
+curl -X POST http://localhost:8085/refresh-token
 ```
 
 Or re-authenticate the account:

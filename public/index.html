@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity Claude Proxy - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>Antigravity Claude Proxy</h1>
+            <span class="status-badge" id="server-status">Connecting...</span>
+        </div>
+        <div class="header-right">
+            <div class="refresh-controls">
+                <label class="toggle">
+                    <input type="checkbox" id="auto-refresh-toggle" checked>
+                    <span>Auto-refresh</span>
+                </label>
+                <select id="refresh-interval">
+                    <option value="10000">10s</option>
+                    <option value="30000" selected>30s</option>
+                    <option value="60000">1m</option>
+                    <option value="300000">5m</option>
+                </select>
+                <button id="manual-refresh" class="btn-refresh" title="Refresh Now">
+                    <span class="refresh-icon">&#8635;</span>
+                </button>
+            </div>
+            <span class="last-updated">Updated: <time id="last-update">--</time></span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Error Banner -->
+        <div id="error-banner" class="error-banner hidden">
+            <span id="error-message"></span>
+            <button id="error-retry" class="btn-retry">Retry</button>
+        </div>
+
+        <!-- Global Quota Cards -->
+        <section id="global-quota" class="quota-cards-grid">
+            <div class="quota-card claude">
+                <div class="quota-card-header">
+                    <span class="quota-card-icon">C</span>
+                    <span class="quota-card-title">Claude Quota</span>
+                </div>
+                <div class="quota-card-body">
+                    <div class="quota-card-value" id="claude-quota">-</div>
+                    <div class="quota-card-bar">
+                        <div class="quota-card-fill" id="claude-quota-fill"></div>
+                    </div>
+                </div>
+                <div class="quota-card-footer">
+                    <span class="quota-card-reset" id="claude-reset">-</span>
+                </div>
+            </div>
+            <div class="quota-card gemini">
+                <div class="quota-card-header">
+                    <span class="quota-card-icon">G</span>
+                    <span class="quota-card-title">Gemini Quota</span>
+                </div>
+                <div class="quota-card-body">
+                    <div class="quota-card-value" id="gemini-quota">-</div>
+                    <div class="quota-card-bar">
+                        <div class="quota-card-fill" id="gemini-quota-fill"></div>
+                    </div>
+                </div>
+                <div class="quota-card-footer">
+                    <span class="quota-card-reset" id="gemini-reset">-</span>
+                </div>
+            </div>
+            <div class="quota-card next-reset">
+                <div class="quota-card-header">
+                    <span class="quota-card-icon">&#8635;</span>
+                    <span class="quota-card-title">Next Reset</span>
+                </div>
+                <div class="quota-card-body">
+                    <div class="quota-card-value countdown" id="next-reset-time">-</div>
+                </div>
+                <div class="quota-card-footer">
+                    <span class="quota-card-reset" id="next-reset-model">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Account Summary Cards -->
+        <section id="summary" class="summary-grid">
+            <div class="summary-card">
+                <div class="card-value" id="total-accounts">-</div>
+                <div class="card-label">Total Accounts</div>
+            </div>
+            <div class="summary-card status-ok">
+                <div class="card-value" id="available-accounts">-</div>
+                <div class="card-label">Available</div>
+            </div>
+            <div class="summary-card status-warning">
+                <div class="card-value" id="rate-limited-accounts">-</div>
+                <div class="card-label">Rate Limited</div>
+            </div>
+            <div class="summary-card status-error">
+                <div class="card-value" id="invalid-accounts">-</div>
+                <div class="card-label">Invalid</div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section id="filters" class="filters">
+            <div class="filter-group">
+                <label>Model Family:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="claude">Claude</button>
+                    <button class="filter-btn" data-filter="gemini">Gemini</button>
+                </div>
+            </div>
+            <div class="search-group">
+                <input type="text" id="account-search" placeholder="Search accounts..." />
+            </div>
+        </section>
+
+        <!-- Account List -->
+        <section id="accounts" class="accounts-section">
+            <h2>Accounts</h2>
+            <div id="accounts-list" class="accounts-list">
+                <!-- Account cards will be rendered here -->
+            </div>
+        </section>
+
+        <!-- Model Matrix -->
+        <section id="matrix" class="matrix-section">
+            <h2>Quota Matrix</h2>
+            <div class="matrix-container">
+                <table id="quota-matrix" class="quota-matrix">
+                    <!-- Matrix will be rendered here -->
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            <a href="https://github.com/badri-s2001/antigravity-claude-proxy" target="_blank">GitHub</a>
+            &bull;
+            Proxy running on port 8085
+        </p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
