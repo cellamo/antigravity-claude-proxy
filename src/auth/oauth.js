@@ -131,10 +131,10 @@ export function startCallbackServer(expectedState, timeoutMs = 120000) {
             const error = url.searchParams.get('error');
 
             if (error) {
-                res.writeHead(400, { 'Content-Type': 'text/html' });
+                res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
                 res.end(`
                     <html>
-                    <head><title>Authentication Failed</title></head>
+                    <head><meta charset="UTF-8"><title>Authentication Failed</title></head>
                     <body style="font-family: system-ui; padding: 40px; text-align: center;">
                         <h1 style="color: #dc3545;">❌ Authentication Failed</h1>
                         <p>Error: ${error}</p>
@@ -148,10 +148,10 @@ export function startCallbackServer(expectedState, timeoutMs = 120000) {
             }
 
             if (state !== expectedState) {
-                res.writeHead(400, { 'Content-Type': 'text/html' });
+                res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
                 res.end(`
                     <html>
-                    <head><title>Authentication Failed</title></head>
+                    <head><meta charset="UTF-8"><title>Authentication Failed</title></head>
                     <body style="font-family: system-ui; padding: 40px; text-align: center;">
                         <h1 style="color: #dc3545;">❌ Authentication Failed</h1>
                         <p>State mismatch - possible CSRF attack.</p>
@@ -165,10 +165,10 @@ export function startCallbackServer(expectedState, timeoutMs = 120000) {
             }
 
             if (!code) {
-                res.writeHead(400, { 'Content-Type': 'text/html' });
+                res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
                 res.end(`
                     <html>
-                    <head><title>Authentication Failed</title></head>
+                    <head><meta charset="UTF-8"><title>Authentication Failed</title></head>
                     <body style="font-family: system-ui; padding: 40px; text-align: center;">
                         <h1 style="color: #dc3545;">❌ Authentication Failed</h1>
                         <p>No authorization code received.</p>
@@ -182,10 +182,10 @@ export function startCallbackServer(expectedState, timeoutMs = 120000) {
             }
 
             // Success!
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(`
                 <html>
-                <head><title>Authentication Successful</title></head>
+                <head><meta charset="UTF-8"><title>Authentication Successful</title></head>
                 <body style="font-family: system-ui; padding: 40px; text-align: center;">
                     <h1 style="color: #28a745;">✅ Authentication Successful!</h1>
                     <p>You can close this window and return to the terminal.</p>

@@ -39,10 +39,10 @@ A proxy server that exposes an **Anthropic-compatible API** backed by **Antigrav
 
 ```bash
 # Run directly with npx (no install needed)
-npx antigravity-claude-proxy start
+npx antigravity-claude-proxy@latest start
 
 # Or install globally
-npm install -g antigravity-claude-proxy
+npm install -g antigravity-claude-proxy@latest
 antigravity-claude-proxy start
 ```
 
@@ -78,7 +78,7 @@ Add one or more Google accounts for load balancing.
 antigravity-claude-proxy accounts add
 
 # If using npx
-npx antigravity-claude-proxy accounts add
+npx antigravity-claude-proxy@latest accounts add
 
 # If cloned locally
 npm run accounts:add
@@ -93,7 +93,7 @@ This opens your browser for Google OAuth. Sign in and authorize access. Repeat f
 antigravity-claude-proxy accounts add --no-browser
 
 # If using npx
-npx antigravity-claude-proxy accounts add -- --no-browser
+npx antigravity-claude-proxy@latest accounts add -- --no-browser
 
 # If cloned locally
 npm run accounts:add -- --no-browser
@@ -121,7 +121,7 @@ antigravity-claude-proxy accounts
 antigravity-claude-proxy start
 
 # If using npx
-npx antigravity-claude-proxy start
+npx antigravity-claude-proxy@latest start
 
 # If cloned locally
 npm start
@@ -161,11 +161,14 @@ Add this configuration:
     "ANTHROPIC_MODEL": "claude-opus-4-5-thinking",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5-thinking",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5-thinking",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-5",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-5-thinking"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini-2.5-flash-lite[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-4-5-thinking",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
   }
 }
 ```
+
+(Please use **gemini-2.5-flash-lite** as the default haiku model, even if others are claude, as claude code makes several calls via the haiku model for background tasks. If you use claude model for it, you may use you claude usage sooner)
 
 Or to use Gemini models:
 
@@ -173,12 +176,13 @@ Or to use Gemini models:
 {
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "test",
-    "ANTHROPIC_BASE_URL": "http://localhost:8085",
-    "ANTHROPIC_MODEL": "gemini-3-pro-high",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini-3-pro-high",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini-3-flash",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini-2.5-flash-lite",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "gemini-3-flash"
+    "ANTHROPIC_BASE_URL": "http://localhost:8080",
+    "ANTHROPIC_MODEL": "gemini-3-pro-high[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gemini-3-pro-high[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gemini-3-flash[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gemini-2.5-flash-lite[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "gemini-3-flash[1m]",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
   }
 }
 ```
@@ -190,8 +194,8 @@ Add the proxy settings to your shell profile:
 **macOS / Linux:**
 
 ```bash
-echo 'export ANTHROPIC_BASE_URL="http://localhost:8085"' >> ~/.zshrc
-echo 'export ANTHROPIC_API_KEY="test"' >> ~/.zshrc
+echo 'export ANTHROPIC_BASE_URL="http://localhost:8080"' >> ~/.zshrc
+echo 'export ANTHROPIC_AUTH_TOKEN="test"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -200,16 +204,16 @@ source ~/.zshrc
 **Windows (PowerShell):**
 
 ```powershell
-Add-Content $PROFILE "`n`$env:ANTHROPIC_BASE_URL = 'http://localhost:8085'"
-Add-Content $PROFILE "`$env:ANTHROPIC_API_KEY = 'test'"
+Add-Content $PROFILE "`n`$env:ANTHROPIC_BASE_URL = 'http://localhost:8080'"
+Add-Content $PROFILE "`$env:ANTHROPIC_AUTH_TOKEN = 'test'"
 . $PROFILE
 ```
 
 **Windows (Command Prompt):**
 
 ```cmd
-setx ANTHROPIC_BASE_URL "http://localhost:8085"
-setx ANTHROPIC_API_KEY "test"
+setx ANTHROPIC_BASE_URL "http://localhost:8080"
+setx ANTHROPIC_AUTH_TOKEN "test"
 ```
 
 Restart your terminal for changes to take effect.
@@ -225,6 +229,31 @@ claude
 ```
 
 > **Note:** If Claude Code asks you to select a login method, add `"hasCompletedOnboarding": true` to `~/.claude.json` (macOS/Linux) or `%USERPROFILE%\.claude.json` (Windows), then restart your terminal and try again.
+
+### Multiple Claude Code Instances (Optional)
+
+To run both the official Claude Code and Antigravity version simultaneously, add this alias:
+
+**macOS / Linux:**
+
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+alias claude-antigravity='CLAUDE_CONFIG_DIR=~/.claude-account-antigravity ANTHROPIC_BASE_URL="http://localhost:8080" ANTHROPIC_AUTH_TOKEN="test" command claude'
+```
+
+**Windows (PowerShell):**
+
+```powershell
+# Add to $PROFILE
+function claude-antigravity {
+    $env:CLAUDE_CONFIG_DIR = "$env:USERPROFILE\.claude-account-antigravity"
+    $env:ANTHROPIC_BASE_URL = "http://localhost:8080"
+    $env:ANTHROPIC_AUTH_TOKEN = "test"
+    claude
+}
+```
+
+Then run `claude` for official API or `claude-antigravity` for this proxy.
 
 ---
 
@@ -400,4 +429,4 @@ MIT
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=badri-s2001/antigravity-claude-proxy&type=date&legend=top-left&cache-control=no-cache)](https://www.star-history.com/#badri-s2001/antigravity-claude-proxy&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=badrisnarayanan/antigravity-claude-proxy&type=date&legend=top-left&cache-control=no-cache)](https://www.star-history.com/#badrisnarayanan/antigravity-claude-proxy&type=date&legend=top-left)

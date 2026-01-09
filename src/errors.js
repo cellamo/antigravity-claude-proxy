@@ -119,6 +119,37 @@ export class ApiError extends AntigravityError {
 }
 
 /**
+ * Native module error (version mismatch, rebuild required)
+ */
+export class NativeModuleError extends AntigravityError {
+    /**
+     * @param {string} message - Error message
+     * @param {boolean} rebuildSucceeded - Whether auto-rebuild succeeded
+     * @param {boolean} restartRequired - Whether server restart is needed
+     */
+    constructor(message, rebuildSucceeded = false, restartRequired = false) {
+        super(message, 'NATIVE_MODULE_ERROR', false, { rebuildSucceeded, restartRequired });
+        this.name = 'NativeModuleError';
+        this.rebuildSucceeded = rebuildSucceeded;
+        this.restartRequired = restartRequired;
+    }
+}
+
+/**
+ * Empty response error - thrown when API returns no content
+ * Used to trigger retry logic in streaming handler
+ */
+export class EmptyResponseError extends AntigravityError {
+    /**
+     * @param {string} message - Error message
+     */
+    constructor(message = 'No content received from API') {
+        super(message, 'EMPTY_RESPONSE', true, {});
+        this.name = 'EmptyResponseError';
+    }
+}
+
+/**
  * Check if an error is a rate limit error
  * Works with both custom error classes and legacy string-based errors
  * @param {Error} error - Error to check
@@ -147,6 +178,16 @@ export function isAuthError(error) {
         msg.includes('TOKEN REFRESH FAILED');
 }
 
+/**
+ * Check if an error is an empty response error
+ * @param {Error} error - Error to check
+ * @returns {boolean}
+ */
+export function isEmptyResponseError(error) {
+    return error instanceof EmptyResponseError ||
+        error?.name === 'EmptyResponseError';
+}
+
 export default {
     AntigravityError,
     RateLimitError,
@@ -154,6 +195,9 @@ export default {
     NoAccountsError,
     MaxRetriesError,
     ApiError,
+    NativeModuleError,
+    EmptyResponseError,
     isRateLimitError,
-    isAuthError
+    isAuthError,
+    isEmptyResponseError
 };
