@@ -129,6 +129,12 @@ npm start
 
 The server runs on `http://localhost:8085` by default.
 
+To use a custom port:
+
+```bash
+PORT=3001 antigravity-claude-proxy start
+```
+
 ### 3. Verify It's Working
 
 ```bash
